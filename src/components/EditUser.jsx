@@ -40,69 +40,114 @@ const EditUser = () => {
       return;
     }
     try {
+      setMsg(""); // Clear previous message
       const token = localStorage.getItem("token");
       await axios.put(
         `${BASE_URL}/user`,
         { name: name, password: password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMsg("Profile updated successfully");
-      navigate("/dashboard"); // Redirect after update
+      setMsg("Profile updated successfully!");
+      setTimeout(() => {
+        navigate("/dashboard"); // Redirect after a short delay
+      }, 1500);
     } catch (error) {
       setMsg(error.response?.data?.message || "Failed to update profile");
     }
   };
 
-  if (loading) return <div>Loading profile data...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return (
+    <section className="section is-fullheight">
+      <div className="container has-text-centered">
+        <span className="icon is-large">
+          <i className="fas fa-spinner fa-pulse fa-3x"></i>
+        </span>
+        <p>Loading profile data...</p>
+      </div>
+    </section>
+  );
+
+  if (error) return (
+    <section className="section">
+      <div className="container">
+        <div className="notification is-danger">{error}</div>
+      </div>
+    </section>
+  );
 
   return (
-    <div className="container">
-      <h1 className="title">Edit Profile</h1>
-      <form onSubmit={updateProfile} className="box">
-        <p className="has-text-centered">{msg}</p>
-        <div className="field">
-          <label className="label">Name</label>
-          <div className="control">
-            <input
-              type="text"
-              className="input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="field">
-          <label className="label">New Password</label>
-          <div className="control">
-            <input
-              type="password"
-              className="input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="field">
-          <label className="label">Confirm New Password</label>
-          <div className="control">
-            <input
-              type="password"
-              className="input"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="field">
-          <div className="control">
-            <button className="button is-primary" type="submit">
-              Update Profile
+    <section className="section">
+      <div className="container">
+        <div className="columns is-centered">
+          <div className="column is-half">
+            {/* Arrow Back Button */}
+            <button
+              className="button is-text mb-4"
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              <span className="icon">
+                <i className="fas fa-arrow-left"></i>
+              </span>
+              <span>Back to Dashboard</span>
             </button>
+            <h1 className="title is-2 has-text-centered">Edit Profile</h1>
+            <form onSubmit={updateProfile} className="box">
+              {msg && (
+                <p className={`notification ${msg.includes('success') ? 'is-success' : 'is-danger'} is-light has-text-centered`}>
+                  {msg}
+                </p>
+              )}
+              <div className="field">
+                <label className="label">Name</label>
+                <div className="control">
+                  <input
+                    type="text"
+                    className="input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your Name"
+                  />
+                </div>
+              </div>
+              <div className="field">
+                <label className="label">New Password</label>
+                <div className="control">
+                  <input
+                    type="password"
+                    className="input"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="New Password (optional)"
+                  />
+                </div>
+                <p className="help">Leave blank to keep the current password.</p>
+              </div>
+              <div className="field">
+                <label className="label">Confirm New Password</label>
+                <div className="control">
+                  <input
+                    type="password"
+                    className="input"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm New Password"
+                  />
+                </div>
+              </div>
+              <div className="field">
+                <div className="control">
+                  <button className="button is-primary is-fullwidth" type="submit">
+                    Update Profile
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 };
 
